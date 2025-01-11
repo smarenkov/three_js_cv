@@ -1,6 +1,6 @@
 # Three.js portfolio
 
-A simple Vue.js project that use Three.js to showcase your portfolio with interactive 3D elements.
+> A simple Vue.js project that use Three.js to showcase your portfolio with interactive 3D elements.
 
 # Getting started
 
