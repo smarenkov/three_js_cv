@@ -5,23 +5,22 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+const env = loadEnv('', process.cwd(), '');
+
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
-  
-  return {
-    server: {
-      port: parseInt(env.PORT),
+export default defineConfig({
+  server: {
+    port: parseInt(env.PORT),
+  },
+  plugins: [
+    vue(),
+    vueJsx(),
+    vueDevTools(),
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-    plugins: [
-      vue(),
-      vueJsx(),
-      vueDevTools(),
-    ],
-    resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
-      },
-    },
-  }
-})
+  },
+}
+)
