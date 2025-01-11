@@ -1,6 +1,6 @@
-FROM node:18
+FROM node:18 as build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start"]
