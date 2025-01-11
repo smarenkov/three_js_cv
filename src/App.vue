@@ -1,85 +1,81 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import * as THREE from 'three';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useWindowSize } from '@vueuse/core'
+import { OrbitControls } from 'three/examples/jsm/Addons.js';
+
+const canvas = ref<HTMLCanvasElement | null>(null);
+
+let camera: THREE.PerspectiveCamera;
+let renderer: THREE.WebGLRenderer;
+let controls: OrbitControls;
+
+const { width, height } = useWindowSize();
+const aspectRatio = computed(() => width.value / height.value);
+
+
+const scene = new THREE.Scene();
+camera = new THREE.PerspectiveCamera(75, aspectRatio.value, 0.1, 1000);
+camera.position.y = 5;
+camera.position.z = 10;
+scene.add(camera);
+
+const textureLoader = new THREE.TextureLoader();
+const texture = textureLoader.load('texture.jpg');
+
+// const sphere = new THREE.Mesh(
+//   new THREE.SphereGeometry(5, 32, 32),
+//   new THREE.MeshBasicMaterial({ map: texture })
+// );
+// scene.add(sphere);
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(5, 5, 5, 32, 32),
+  new THREE.MeshBasicMaterial({ map: texture })
+);
+scene.add(cube);
+
+onMounted(() => {
+  if (!canvas.value) {
+    console.error('Canvas not found');
+    return;
+  }
+
+  renderer = new THREE.WebGLRenderer({
+    canvas: canvas.value,
+    antialias: true,
+  });
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  updateCamera();
+  updateRenderer();
+
+  update();
+})
+
+const updateCamera = () => {
+  camera.aspect = aspectRatio.value;
+  camera.updateProjectionMatrix();
+}
+
+const updateRenderer = () => {
+  renderer.setSize(width.value, height.value);
+  renderer.setPixelRatio(window.devicePixelRatio);
+}
+
+watch(aspectRatio, updateCamera);
+watch(aspectRatio, updateRenderer);
+
+const update = () => {
+  renderer.render(scene, camera);
+
+  cube.rotation.y += 0.01;
+  requestAnimationFrame(update);
+}
+
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <canvas ref="canvas"></canvas>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
