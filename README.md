@@ -18,7 +18,7 @@ cp .env.example .env
 
 ### Configure Nginx
 
-1. Create an Nginx configuration file for your domain at `/etc/nginx/sites-available/{your_domain}`:
+1. Create an Nginx configuration file for your domain at `/etc/nginx/sites-enabled/{your_domain}`:
 ```conf
 server {
     listen 80;
